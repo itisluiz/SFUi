@@ -3,9 +3,8 @@ local Component = class("Component")
 function Component:initialize(parent, pos, size)
     self.pos = pos
     self.size = size or Vector()
-    self.palette = table.copy(SFUi.palette)
-    self.children = {}
     self.parent = parent
+    self.palette = self.parent and self.parent.palette or table.copy(SFUi.palette)
     self.root = nil
     self.mins = nil
     self.center = nil
@@ -13,6 +12,7 @@ function Component:initialize(parent, pos, size)
     self.hover = false
     self.visible = true
     self.lastclicked = 0
+    self.children = {}
     self.focus = {
         component = nil,
         allowed = true
@@ -88,6 +88,18 @@ function Component:updateDrag(cursor)
         self.drag.from = cursor
     else
         self.drag.delta = nil
+    end
+end
+
+function Component:scale(factor, recursive)
+    recursive = recursive or true
+    self.size = self.size * factor
+    self.pos = self.pos * factor
+    
+    if recursive then
+        for _, child in ipairs(self.children) do
+            child:scale(factor, recursive)
+        end
     end
 end
 

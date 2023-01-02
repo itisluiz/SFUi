@@ -87,18 +87,19 @@ end)
 ```
 # Quick and dirty documentation
 
-## GUI Instance
->- SFUi:**new()** - Create a new gui instance
->- guiinstance:**addComponent(component)** - Adds a new component to the renderer - **Only add root components, not their children**
->- guiinstance:**removeComponent(component)** - Removes a component from the renderer
->- guiinstance:**render()** - Render and handle all components added - **Must be inside a rendering hook**
+### **SFUi Instance** - SFUi(height or nil, fontsize or nil, font or nil)
+#### Parameters
+>- **height**: number, the height of the display on which the GUI was designed, used for auto-scaling, if nil auto-scaling is disabled
+>- **fontsize**: number, the fontsize of the display on which the GUI was designed, used for font auto-scaling, if nil font auto-scaling is disabled
+>- **font**: string, the font name to be used with auto-scaled fonts, defaults to "Default"
 
 ## Components
-### Notable base members
+### Useful base members
 >- component.**pos**
 >- component.**size**
 >- component.**visible** - Whether a component and it's children should be rendered
 >- component.**palette** - A table of colors with the following keys: *foreground*, *background*, *hover*, *component*, *contrast* and *highlight*
+>- component:**scale(factor, recursive or nil)** - Scales the component's size and position by factor (number), and recurses if recursive (boolean), defaults to true
 
 ### **Window** - SFUi.window(pos, size, title or nil, draggable or nil)
 #### Parameters

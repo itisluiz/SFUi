@@ -6,7 +6,7 @@ function List:initialize(parent, pos, size, label, options, callback)
     self.options = options
     self.callback = callback
     self.labelheight = 0
-    self.scrollwidth = 6
+    self.scrollwidth = 7
     self.value = nil
     self.list = {
         length = 0,
@@ -119,7 +119,7 @@ function List:render(cursor, action)
     render.drawSimpleText(self.mins.x + 2, self.mins.y - self.labelheight, self.label)
 
     render.setColor(self.hover and self.palette.hover or self.palette.contrast)
-    render.drawRectOutline(self.mins.x, self.mins.y, self.size.x, self.size.y)
+    render.drawRectOutline(self.mins.x - 1, self.mins.y - 1, self.size.x + 2, self.size.y + 2)
 
     SFUi.component.render(self, cursor, action)
 end

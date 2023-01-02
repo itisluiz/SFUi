@@ -9,8 +9,16 @@ SFUi.static.palette = {
     highlight = Color(150, 255, 0)
 }
 
-function SFUi:initialize()
+function SFUi:initialize(height, fontsize, font)
+    self.scaling = {
+        height = height,
+        fontsize = fontsize,
+        lastScale = 1,
+        lastHeight = nil
+    }
     self.components = {}
+    self.font = font or "Default"
+    self.fonts = {}
     self.preventClick = false
 end
 
@@ -54,34 +62,44 @@ function SFUi:render()
     local isHUD = not render.getScreenEntity()
     local cursor = nil
     local action = {click = false, held = false}
+    local curHeight = select(2, render.getResolution())
+    local scale = nil
 
-    -- Get appropriate cursor position
-    do
-        local cursorSource = isHUD and {input.getCursorPos()} or {render.cursorPos()}
-        if cursorSource[1] and cursorSource[2] then
-            cursor = Vector(cursorSource[1], cursorSource[2])
+    if self.scaling.height and self.scaling.lastHeight ~= curHeight then
+        local rawScale = (curHeight / self.scaling.height)
+        scale = rawScale / self.scaling.lastScale
+        
+        if self.scaling.fontsize then
+            local scaledFontSize = math.round(self.scaling.fontsize * rawScale)
+            if not self.fonts[scaledFontSize] then
+                self.fonts[scaledFontSize] = render.createFont(self.font, scaledFontSize, 400)
+            end
+            render.setFont(self.fonts[scaledFontSize])
         end
-
+        
+        self.scaling.lastScale = self.scaling.lastScale * scale
+        self.scaling.lastHeight = curHeight
     end
 
-    -- Get action values for held and clicked
-    do
-        action.held = input.isKeyDown(KEY.E) or input.isMouseDown(MOUSE.LEFT)
-        if action.held and not self.preventClick then
-            action.click = true
-            self.preventClick = true
-        elseif not action.held then
-            self.preventClick = false
-        end
-
+    local cursorSource = isHUD and {input.getCursorPos()} or {render.cursorPos()}
+    if cursorSource[1] and cursorSource[2] then
+        cursor = Vector(cursorSource[1], cursorSource[2])
     end
 
-    -- Prevent clicking on obsucured components
+    action.held = input.isKeyDown(KEY.E) or input.isMouseDown(MOUSE.LEFT)
+    if action.held and not self.preventClick then
+        action.click = true
+        self.preventClick = true
+    elseif not action.held then
+        self.preventClick = false
+    end
+
     self:orderTopmost()
     local hovered = self:hoveredComponent(cursor)
-
-    -- Render components
     for index, component in ipairs(table.reverse(self.components)) do
+        if scale then
+            component:scale(scale, true)
+        end
         if component.visible then
             component.focus.allowed = component == hovered
             component:render(cursor, action)
