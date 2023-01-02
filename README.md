@@ -87,11 +87,9 @@ end)
 ```
 # Quick and dirty documentation
 
-### **SFUi Instance** - SFUi(height or nil, fontsize or nil, font or nil)
+### **SFUi Instance** - SFUi(scaling or nil)
 #### Parameters
->- **height**: number, the height of the display on which the GUI was designed, used for auto-scaling, if nil auto-scaling is disabled
->- **fontsize**: number, the fontsize of the display on which the GUI was designed, used for font auto-scaling, if nil font auto-scaling is disabled
->- **font**: string, the font name to be used with auto-scaled fonts, defaults to "Default"
+>- **scaling**: table, contains information regarding how the components should be auto-scaled for different resolutions. Contains the following keys: *designHeight* (The height for which the current sizes were designed or nil to disable auto scaling), *designFontSize* (The designed font size for the design height or nil to disable font auto scaling), *componentAttenuation* (For making components scale less [0 - 1] default 0), *fontAttenuation* (For making fonts scale less [0 - 1] default 0.6) and *fontName* (Font name to be used for auto-scaling on fonts, default is "Default")
 
 ## Components
 ### Useful base members

@@ -9,16 +9,21 @@ SFUi.static.palette = {
     highlight = Color(150, 255, 0)
 }
 
-function SFUi:initialize(height, fontsize, font)
+function SFUi:initialize(scaling)
+    scaling = scaling or {}
+    
     self.scaling = {
-        height = height,
-        fontsize = fontsize,
-        lastScale = 1,
+        designHeight = scaling.designHeight,
+        designFontSize = scaling.designFontSize,
+        componentAttenuation = scaling.componentAttenuation or 0,
+        fontAttenuation = scaling.fontAttenuation or 0.6,
+        fontName = scaling.fontName or "Default",
+        fonts = {},
+        curScale = 1,
         lastHeight = nil
     }
+
     self.components = {}
-    self.font = font or "Default"
-    self.fonts = {}
     self.preventClick = false
 end
 
@@ -62,24 +67,8 @@ function SFUi:render()
     local isHUD = not render.getScreenEntity()
     local cursor = nil
     local action = {click = false, held = false}
-    local curHeight = select(2, render.getResolution())
-    local scale = nil
-
-    if self.scaling.height and self.scaling.lastHeight ~= curHeight then
-        local rawScale = (curHeight / self.scaling.height)
-        scale = rawScale / self.scaling.lastScale
-        
-        if self.scaling.fontsize then
-            local scaledFontSize = math.round(self.scaling.fontsize * rawScale)
-            if not self.fonts[scaledFontSize] then
-                self.fonts[scaledFontSize] = render.createFont(self.font, scaledFontSize, 400)
-            end
-            render.setFont(self.fonts[scaledFontSize])
-        end
-        
-        self.scaling.lastScale = self.scaling.lastScale * scale
-        self.scaling.lastHeight = curHeight
-    end
+    local height = select(2, render.getResolution())
+    local scale_pending = nil
 
     local cursorSource = isHUD and {input.getCursorPos()} or {render.cursorPos()}
     if cursorSource[1] and cursorSource[2] then
@@ -94,11 +83,32 @@ function SFUi:render()
         self.preventClick = false
     end
 
+    if self.scaling.lastHeight ~= height then
+        local designHeight = self.scaling.designHeight or height
+        local scale = height / designHeight
+        local scale_components = (scale + (1 - scale) * self.scaling.componentAttenuation) / self.scaling.curScale
+
+        if self.scaling.designFontSize then
+            local scale_font = scale + (1 - scale) * self.scaling.fontAttenuation
+            local fontSize = math.round(scale_font * self.scaling.designFontSize)
+
+            if not self.scaling.fonts[fontSize] then
+                self.scaling.fonts[fontSize] = render.createFont(self.scaling.fontName, fontSize)
+            end
+            
+            render.setFont(self.scaling.fonts[fontSize])
+        end 
+
+        scale_pending = scale_components
+        self.scaling.curScale = self.scaling.curScale * scale_components
+        self.scaling.lastHeight = height
+    end
+
     self:orderTopmost()
     local hovered = self:hoveredComponent(cursor)
     for index, component in ipairs(table.reverse(self.components)) do
-        if scale then
-            component:scale(scale, true)
+        if scale_pending then
+            component:scale(scale_pending)
         end
         if component.visible then
             component.focus.allowed = component == hovered
