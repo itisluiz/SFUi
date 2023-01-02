@@ -99,15 +99,19 @@ end)
 >- component.**palette** - A table of colors with the following keys: *foreground*, *background*, *hover*, *component*, *contrast* and *highlight*
 >- component:**scale(factor, recursive or nil)** - Scales the component's size and position by factor (number), and recurses if recursive (boolean), defaults to true
 
-### **Window** - SFUi.window(pos, size, title or nil, draggable or nil)
+### **Window** - SFUi.window(pos, size, title or nil, draggable or nil, closehides or nil, callback or nil)
 #### Parameters
 >- **pos**: 2D Vector
 >- **size**: 2D Vector
 >- **title**: string, defaults to "Window"
 >- **draggable**: boolean, defaults to true
+>- **closehides**: boolean, if true or false then the close button will be visible, the truthiness determines if the close button should make the window not visible when clicked. If nil then the close button isn't visible.
+>- **callback**: function(), called when the close button is visible and clicked
 #### Useful Members
 >- component.**title**
 >- component.**draggable**
+>- component.**closehides**
+>- component.**callback**
 
 ### **Button** - SFUi.button(parent or nil, pos, size, text, callback or nil)
 #### Parameters
