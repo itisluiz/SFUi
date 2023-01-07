@@ -4,7 +4,7 @@ function Component:initialize(parent, pos, size)
     self.pos = pos
     self.size = size or Vector()
     self.parent = parent
-    self.palette = self.parent and self.parent.palette or table.copy(SFUi.palette)
+    self.palette = table.copy(self.parent and self.parent.palette or SFUi.palette)
     self.root = nil
     self.mins = nil
     self.center = nil

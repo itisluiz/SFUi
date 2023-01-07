@@ -1,3 +1,7 @@
+-- SFUi by itisluiz
+-- https://github.com/itisluiz/SFUi/
+-- Version 0.2
+
 SFUi = class("SFUi")
 
 SFUi.static.palette = {

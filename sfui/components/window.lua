@@ -61,7 +61,7 @@ function Window:render(cursor, action)
         render.drawLine(self.maxs.x - self.barheight * 0.75, self.mins.y + self.barheight * 0.75, self.maxs.x - self.barheight * 0.25, self.mins.y + self.barheight * 0.25)
     end
 
-    if self.dragging then
+    if self.dragging and self.drag.delta then
         self.pos = self.pos + self.drag.delta
     end
 

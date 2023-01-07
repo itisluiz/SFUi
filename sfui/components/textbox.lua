@@ -5,7 +5,7 @@ function Textbox:initialize(parent, pos, size, hint, text, callback)
     self.hint = hint or "Hover and chat"
     self.text = text or ""
     self.callback = callback
-    self.active = false
+    self.active = nil
     self.typing = false
     self.trimmed = {
         old = {
@@ -42,16 +42,25 @@ function Textbox:render(cursor, action)
     render.setColor(self.active and self.typing and self.palette.highlight or self.palette.contrast)
     render.drawRectOutline(self.mins.x, self.mins.y, self.size.x, self.size.y)
 
-    if not self.active and self.hover and player():isTyping() then
+    -- Active status
+    -- 1: Clicked, didn't start typing
+    -- 2: Hovered and typing
+    -- 3: Clicked and typing
+
+    if self.active == 1 and player():isTyping() then
+        self.active = 3
+    end
+
+    if not self.active and self.hover and (player():isTyping() or self.action.click) then
         hook.add("FinishChat", "sfui_textbox", self.hooks.FinishChat)
         hook.add("ChatTextChanged", "sfui_textbox", self.hooks.ChatTextChanged)
         self.typing = true
-        self.active = true
+        self.active = self.action.click and 1 or 2
         self.text = ""
-    elseif self.active and (not self.hover or not player():isTyping()) then
+    elseif self.active and (self.active > 1 and not player():isTyping()) or (self.active == 1 and not self.hover and action.click) then
         hook.remove("FinishChat", "sfui_textbox")
         hook.remove("ChatTextChanged", "sfui_textbox")
-        self.active = false
+        self.active = nil
         if self.callback then
             self.callback(self.text)
         end
