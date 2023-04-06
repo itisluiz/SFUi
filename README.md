@@ -21,6 +21,7 @@ https://user-images.githubusercontent.com/46863600/210156461-7b12105b-3d6a-48de-
 --@include https://raw.githubusercontent.com/itisluiz/SFUi/main/sfui/components/list.lua as components/list.lua
 --@include https://raw.githubusercontent.com/itisluiz/SFUi/main/sfui/components/radio.lua as components/radio.lua
 --@include https://raw.githubusercontent.com/itisluiz/SFUi/main/sfui/components/textbox.lua as components/textbox.lua
+--@include https://raw.githubusercontent.com/itisluiz/SFUi/main/sfui/components/tabber.lua as components/tabber.lua
 
 -- Always Required
 require("sfui.lua")
@@ -35,6 +36,7 @@ require("components/label.lua")
 require("components/list.lua")
 require("components/radio.lua")
 require("components/textbox.lua")
+require("components/tabber.lua")
 
 local counter = 0
 local props = {}
@@ -53,8 +55,20 @@ end
 filterProps("")
 
 local hiddenWindow = SFUi.window(Vector(100, 100), Vector(400, 300), "I was hidden!")
-local textbox = SFUi.textbox(hiddenWindow, Vector(50, 40), Vector(250, 30), "Filter by model...", nil, filterProps)
-local list = SFUi.list(hiddenWindow, Vector(50, 110), Vector(250, 150), "All props", props)
+local tabberA = SFUi.tabber(hiddenWindow, Vector(0, 16), hiddenWindow.size - Vector(0, 16))
+local tabberA_tabA = tabberA:addTab("Prop Search") 
+local tabberA_tabB = tabberA:addTab("Nested Tabs")
+-- Tabber A -> Tab A
+local textbox = SFUi.textbox(tabberA_tabA, Vector(50, 40), Vector(250, 30), "Filter by model...", nil, filterProps)
+local list = SFUi.list(tabberA_tabA, Vector(50, 110), Vector(250, 150), "All props", props)
+-- Tabber A -> Tab B
+local tabberB = SFUi.tabber(tabberA_tabB, Vector(32, 32), Vector(200, 100))
+local tabberB_tabA = tabberB:addTab("Info")
+local tabberB_tabB = tabberB:addTab("Cool Button", function() print("Cool button tab selected!") end)
+-- Tabber A -> Tab B -> Tabber B -> Tab A
+local label = SFUi.label(tabberB_tabA, Vector(10, 24), {"Author: ", Color(0, 255, 0), "itisluiz"})
+-- Tabber A -> Tab B -> Tabber B -> Tab B
+SFUi.button(tabberB_tabB, Vector(32, 24), Vector(124, 16), "Press for Cool", function() print("Cool!") end) 
 hiddenWindow.visible = false
 
 local window = SFUi.window(Vector(10, 10), Vector(300, 200), "My Window")
@@ -91,7 +105,6 @@ hook.add("render", "sfui_gui_render", function()
     end
 end)
 
-
 hook.add("drawhud", "sfui_gui_render", function()
     gui:render()
 end)
@@ -109,6 +122,7 @@ end)
 - [Radio](#radio)
 - [Slider](#slider)
 - [Textbox](#textbox)
+- [Tabber](#tabber)
 ---
 ## SFUi
 SFUi(scaling or nil)
@@ -250,3 +264,14 @@ SFUi.textbox(parent or nil, pos, size, hint or nil, text or nil, callback or nil
 >- component.**text**
 >- component.**callback**
 >- component.**active**
+---
+## Tabber
+SFUi.tabber(parent or nil, pos, size)
+#### Parameters
+>- **parent**: parent element
+>- **pos**: 2D Vector
+>- **size**: 2D Vector
+#### Useful Members
+>- component.**activeTab**
+>- component:**addTab(tabLabel, callback or nil)** - Creates and returns a Tab component for elements to be added into, via setting the returned tab as their parent, with label tabLabel (string), and optional callback (function()) to be called when the created Tab is selected
+>- component:**removeTab(tab)** - Removes the Tab (Tab) from the tabber's children

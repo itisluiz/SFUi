@@ -1,6 +1,6 @@
 -- SFUi by itisluiz
 -- https://github.com/itisluiz/SFUi/
--- Version 0.2
+-- Version 0.3
 
 SFUi = class("SFUi")
 

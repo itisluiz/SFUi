@@ -11,3 +11,10 @@
 - Added dynamic color pallete changing to the example.
 - Added HUD drawing to the example. 
 - Imports in the example file are now pulled from this repository.
+
+#### **04/06/2023** - Version 0.3
+##### Changes
+- Added Tabber component.
+##### Documentation
+- Added Tabber to the example.
+- Added Tabber to the documentation.
