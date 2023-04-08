@@ -18,3 +18,9 @@
 ##### Documentation
 - Added Tabber to the example.
 - Added Tabber to the documentation.
+
+#### **04/08/2023** - Version 0.3.1
+##### Fixes
+- Fixed issue where non draggable windows were draggable
+- Fixed issue with textbox hovering with open chatbox would make it active.
+- Fixed issue with textbox emptying text on chat finish on custom UIs.

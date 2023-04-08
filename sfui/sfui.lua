@@ -29,6 +29,7 @@ function SFUi:initialize(scaling)
 
     self.components = {}
     self.preventClick = false
+    self.preventType = false
 end
 
 function SFUi:addComponent(component)
@@ -70,7 +71,7 @@ end
 function SFUi:render()
     local isHUD = not render.getScreenEntity()
     local cursor = nil
-    local action = {click = false, held = false}
+    local action = {click = false, held = false, typing = 0}
     local height = select(2, render.getResolution())
     local scale_pending = nil
 
@@ -79,7 +80,20 @@ function SFUi:render()
         cursor = Vector(cursorSource[1], cursorSource[2])
     end
 
-    action.held = input.isKeyDown(KEY.E) or input.isMouseDown(MOUSE.LEFT)
+    local playerTyping = player():isTyping()
+    if playerTyping then
+        if not self.preventType then
+            action.typing = 1
+            self.preventType = true
+        else
+            action.typing = 2
+        end
+    else
+        action.typing = 0
+        self.preventType = false
+    end
+
+    action.held = (action.typing == 0 and input.isKeyDown(KEY.E)) or input.isMouseDown(MOUSE.LEFT)
     if action.held and not self.preventClick then
         action.click = true
         self.preventClick = true

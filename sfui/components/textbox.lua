@@ -17,7 +17,7 @@ function Textbox:initialize(parent, pos, size, hint, text, callback)
     }
     self.hooks = {
         FinishChat = function() self.typing = false end,
-        ChatTextChanged = function(txt) self.text = self.typing and txt or self.text end
+        ChatTextChanged = function(txt) timer.create("textbox_change", 0.01, 1, function() self.text = self.typing and txt or self.text end) end
     }
 end
 
@@ -46,18 +46,17 @@ function Textbox:render(cursor, action)
     -- 1: Clicked, didn't start typing
     -- 2: Hovered and typing
     -- 3: Clicked and typing
-
-    if self.active == 1 and player():isTyping() then
+    if self.active == 1 and action.typing > 0 then
         self.active = 3
     end
 
-    if not self.active and self.hover and (player():isTyping() or self.action.click) then
+    if not self.active and self.hover and (action.typing == 1 or self.action.click) then
         hook.add("FinishChat", "sfui_textbox", self.hooks.FinishChat)
         hook.add("ChatTextChanged", "sfui_textbox", self.hooks.ChatTextChanged)
         self.typing = true
         self.active = self.action.click and 1 or 2
         self.text = ""
-    elseif self.active and (self.active > 1 and not player():isTyping()) or (self.active == 1 and not self.hover and action.click) then
+    elseif self.active and (self.active > 1 and action.typing == 0) or (not self.hover and action.click) then
         hook.remove("FinishChat", "sfui_textbox")
         hook.remove("ChatTextChanged", "sfui_textbox")
         self.active = nil

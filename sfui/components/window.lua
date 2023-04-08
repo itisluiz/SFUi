@@ -3,7 +3,7 @@ local Window = class("Window", SFUi.component)
 function Window:initialize(pos, size, title, draggable, closehides, callback)
     SFUi.component.initialize(self, nil, pos, size)
     self.title = title or "Window"
-    self.draggable = draggable ~= nil and draggable or true
+    self.draggable = draggable == nil and true or draggable
     self.closehides = closehides
     self.callback = callback
     self.barheight = 0
